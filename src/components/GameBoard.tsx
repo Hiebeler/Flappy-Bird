@@ -125,13 +125,15 @@ function GameBoard() {
         BIRDWIDTH={BIRDWIDTH}
         BIRDYPOSITION={BIRDYPOSITION}
       />
-      {obstacles.map((obstacle) => {
+      {obstacles.map((obstacle, index) => {
         return (
           <Obstacle
             position={obstacle.position}
             topHeight={obstacle.topHeight}
             spaceBetween={OBSTACLESPACEBETWEEN}
             gameHeight={HEIGHT}
+            gameWidht={WIDTH}
+            key={index}
           />
         );
       })}
