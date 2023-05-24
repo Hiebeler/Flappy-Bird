@@ -1,26 +1,17 @@
-import { useEffect, useState } from "react";
-
 interface ObstacleProps {
   position: number;
   topHeight: number;
-  spaceBetween: number;
+  bottomHeight: number;
   gameHeight: number;
   gameWidht: number;
 }
 
 function Obstacle(props: ObstacleProps) {
-  const [position, setPosition] = useState(0);
-  useEffect(() => {
-    console.log(window.innerWidth);
-    let innerWidth = window.innerWidth;
-    console.log(innerWidth / 2 - props.gameWidht/2 + props.position);
-    setPosition(innerWidth / 2 - props.gameWidht/2 + props.position);
-  })
 
   return (
     <div
-      className="w-[40px] bg-green-700 absolute"
-      style={{ left: position, height: props.gameHeight }}
+      className="w-[40px] absolute"
+      style={{ left: props.position, height: props.gameHeight }}
     >
       <div
         className="bg-green-900 relative"
@@ -33,8 +24,8 @@ function Obstacle(props: ObstacleProps) {
       <div
         className="bg-green-900 relative"
         style={{
-          top: props.spaceBetween,
-          height: props.gameHeight - props.spaceBetween - props.topHeight,
+          top: 200,
+          height: props.bottomHeight,
         }}
       ></div>
     </div>

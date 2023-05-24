@@ -2,43 +2,52 @@ import { useEffect, useState } from "react";
 import Bird from "./Bird";
 import Obstacle from "./Obstacle";
 
+interface Obstacle {
+  position: number;
+  topHeight: number;
+  bottomHeight: number;
+  counted: boolean;
+}
+
 function GameBoard() {
   const HEIGHT = 700;
   const WIDTH = 1000;
   const BIRDWIDTH = 40;
   const BIRDHEIGHT = 40;
-  const GRAVITY = 1;
+  const GRAVITY = 1.3;
   const JUMP_SPEED = -14;
   const OBSTACLEWIDTH = 40;
   const OBSTACLESPEED = 3;
-  const OBSTACLESPACEBETWEEN = 250;
-  const BIRDYPOSITION = 10;
+  const OBSTACLESPACEBETWEEN = 200;
+  const BIRDYPOSITION = 300;
+  const OBSTACLESSPACEBETWEENHORIZONTAL = 170;
   const [birdSpeed, setBirdSpeed] = useState(0);
   const [birdPosition, setBirdPosition] = useState(HEIGHT / 2 + BIRDHEIGHT);
   const [startedGame, setStartedGame] = useState(false);
   const [dead, setDead] = useState(false);
-  const [obstacles, setObstacles] = useState([
-    {
-      position: 400,
-      topHeight: 300,
-      bottomHeight: HEIGHT - 100 - OBSTACLESPACEBETWEEN,
-    },
-    {
-      position: 600,
-      topHeight: 200,
-      bottomHeight: HEIGHT - 100 - OBSTACLESPACEBETWEEN,
-    },
-    {
-      position: 800,
-      topHeight: 100,
-      bottomHeight: HEIGHT - 100 - OBSTACLESPACEBETWEEN,
-    },
-    {
-      position: 960,
-      topHeight: 200,
-      bottomHeight: HEIGHT - 100 - OBSTACLESPACEBETWEEN,
-    },
-  ]);
+  const [obstacles, setObstacles] = useState<Obstacle[]>([]);
+  const [score, setScore] = useState<number>(0);
+
+  useEffect(() => {
+    initializeObstacles(500);
+  }, []);
+
+  function initializeObstacles(startingPosition: number) {
+    let obstaclesArr: Obstacle[] = [];
+    let position = startingPosition;
+    while (position < WIDTH) {
+      const topHeight =
+        Math.random() * (HEIGHT - OBSTACLESPACEBETWEEN - 50 - 50) + 50;
+      obstaclesArr.push({
+        position: position,
+        topHeight: topHeight,
+        bottomHeight: HEIGHT - topHeight - OBSTACLESPACEBETWEEN,
+        counted: false
+      });
+      position += OBSTACLESSPACEBETWEENHORIZONTAL;
+    }
+    setObstacles(obstaclesArr);
+  }
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
@@ -72,12 +81,14 @@ function GameBoard() {
   }
 
   function restart() {
+    initializeObstacles(500);
     setDead(false);
     setBirdPosition(HEIGHT / 2 + BIRDHEIGHT);
     setBirdSpeed(0);
   }
 
   function moveObstacle() {
+    checkIfShouldSpawnNewObstacle(obstacles[obstacles.length - 1]);
     let obstaclesPositionsCopie = obstacles.map((obstacle) => {
       obstacle.position = obstacle.position - OBSTACLESPEED;
       return obstacle;
@@ -89,6 +100,26 @@ function GameBoard() {
     setObstacles(obstaclesPositionsCopie);
   }
 
+  function checkIfShouldSpawnNewObstacle(obstacle: any) {
+    if (obstacle.position < WIDTH - OBSTACLESSPACEBETWEENHORIZONTAL) {
+      spawnObstacle();
+    }
+  }
+
+  function spawnObstacle(position?: number) {
+    const topHeight =
+      Math.random() * (HEIGHT - OBSTACLESPACEBETWEEN - 50 - 50) + 50;
+    const bottomHeight = HEIGHT - topHeight - OBSTACLESPACEBETWEEN;
+    let obstaclesCopie = obstacles;
+    obstaclesCopie.push({
+      position: position ?? WIDTH,
+      topHeight: topHeight,
+      bottomHeight: bottomHeight,
+      counted: false,
+    });
+    setObstacles(obstaclesCopie);
+  }
+
   function checkForCollision(interval: ReturnType<typeof setInterval>) {
     obstacles.forEach((obstacle) => {
       if (
@@ -96,10 +127,18 @@ function GameBoard() {
         obstacle.position + OBSTACLEWIDTH < BIRDYPOSITION
       ) {
         return;
+      } else {
+        if (!obstacle.counted) {
+          setScore((score) => {return score + 1})
+          obstacle.counted = true;
+        }
       }
       if (birdPosition < obstacle.topHeight) {
         dying(interval);
-      } else if (birdPosition + BIRDHEIGHT > obstacle.topHeight + OBSTACLESPACEBETWEEN) {
+      } else if (
+        birdPosition + BIRDHEIGHT >
+        obstacle.topHeight + OBSTACLESPACEBETWEEN
+      ) {
         dying(interval);
       }
     });
@@ -115,10 +154,11 @@ function GameBoard() {
 
   return (
     <div
-      className={`bg-blue-700 flex flex-row overflow-hidden`}
+      className={`bg-blue-700 flex flex-row relative overflow-hidden`}
       style={{ height: HEIGHT, width: WIDTH }}
       onClick={() => click()}
     >
+      {score}
       <Bird
         position={birdPosition}
         BIRDHEIGHT={BIRDHEIGHT}
@@ -130,7 +170,7 @@ function GameBoard() {
           <Obstacle
             position={obstacle.position}
             topHeight={obstacle.topHeight}
-            spaceBetween={OBSTACLESPACEBETWEEN}
+            bottomHeight={obstacle.bottomHeight}
             gameHeight={HEIGHT}
             gameWidht={WIDTH}
             key={index}
