@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Bird from "./Bird";
 import Obstacle from "./Obstacle";
 
-interface Obstacle {
+interface IObstacle {
   position: number;
   topHeight: number;
   bottomHeight: number;
@@ -25,7 +25,7 @@ function GameBoard() {
   const [birdPosition, setBirdPosition] = useState(HEIGHT / 2 + BIRDHEIGHT);
   const [startedGame, setStartedGame] = useState(false);
   const [dead, setDead] = useState(false);
-  const [obstacles, setObstacles] = useState<Obstacle[]>([]);
+  const [obstacles, setObstacles] = useState<IObstacle[]>([]);
   const [score, setScore] = useState<number>(0);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ function GameBoard() {
   }, []);
 
   function initializeObstacles(startingPosition: number) {
-    let obstaclesArr: Obstacle[] = [];
+    let obstaclesArr: IObstacle[] = [];
     let position = startingPosition;
     while (position < WIDTH) {
       const topHeight =
@@ -74,6 +74,7 @@ function GameBoard() {
   }
 
   function dying(interval: ReturnType<typeof setInterval>) {
+    setScore(0);
     setDead(true);
     setStartedGame(false);
     clearInterval(interval);
