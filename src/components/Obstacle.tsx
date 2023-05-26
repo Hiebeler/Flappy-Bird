@@ -1,4 +1,5 @@
 interface ObstacleProps {
+  obstacleWidth: number;
   position: number;
   topHeight: number;
   bottomHeight: number;
@@ -10,24 +11,31 @@ function Obstacle(props: ObstacleProps) {
 
   return (
     <div
-      className="w-[40px] absolute"
-      style={{ left: props.position, height: props.gameHeight }}
+      className="w-[40px] absolute z-10"
+      style={{ left: props.position, height: props.gameHeight, width: props.obstacleWidth }}
     >
       <div
-        className="bg-green-900 relative"
+        className="relative flex flex-col"
         style={{
           top: 0,
           height: props.topHeight,
         }}
-      ></div>
+      >
+        <img src="/obstacle_bottomPart.png" alt="" className="basis-full"/>
+        <img src="/obstacle_topPart.png" alt="" />
+      </div>
 
       <div
-        className="bg-green-900 relative"
+        className="relative"
         style={{
-          top: 200,
+          top: props.gameHeight - (props.topHeight + props.bottomHeight),
           height: props.bottomHeight,
         }}
-      ></div>
+      >
+        <img src="/obstacle_topPart.png" alt="" />
+        <img src="/obstacle_bottomPart.png" alt="" className="h-full"/>
+
+      </div>
     </div>
   );
 }

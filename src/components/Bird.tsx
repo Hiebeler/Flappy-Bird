@@ -3,19 +3,23 @@ interface BirdProps {
   BIRDWIDTH: number;
   BIRDYPOSITION: number;
   position: number;
+  movingUpWards: boolean;
 }
 
 function Bird(props: BirdProps) {
   return (
     <div
-      className="rounded-full bg-amber-600 absolute ml-4"
+      className="absolute ml-4 z-20"
       style={{
         top: props.position,
         width: props.BIRDWIDTH,
         height: props.BIRDHEIGHT,
-        marginLeft: props.BIRDYPOSITION
+        marginLeft: props.BIRDYPOSITION,
+        rotate: props.movingUpWards ? '-25deg': '70deg'
       }}
-    ></div>
+    >
+      <img src="/bird.png" alt="bird"/>
+    </div>
   );
 }
 

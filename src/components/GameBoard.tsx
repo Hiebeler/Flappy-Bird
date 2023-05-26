@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Bird from "./Bird";
 import Obstacle from "./Obstacle";
+import Score from "./Score";
+import Menu from "./Menu";
 
 interface IObstacle {
   position: number;
@@ -12,15 +14,16 @@ interface IObstacle {
 function GameBoard() {
   const HEIGHT = 700;
   const WIDTH = 1000;
-  const BIRDWIDTH = 40;
-  const BIRDHEIGHT = 40;
+  const BIRDWIDTH = 17 * 3.3;
+  const BIRDHEIGHT = 12 * 3.3;
   const GRAVITY = 1.3;
-  const JUMP_SPEED = -14;
-  const OBSTACLEWIDTH = 40;
+  const JUMP_SPEED = -12;
+  const MAXSPEED = 15;
+  const OBSTACLEWIDTH = 60;
   const OBSTACLESPEED = 3;
-  const OBSTACLESPACEBETWEEN = 200;
+  const OBSTACLESPACEBETWEEN = 180;
   const BIRDYPOSITION = 300;
-  const OBSTACLESSPACEBETWEENHORIZONTAL = 170;
+  const OBSTACLESSPACEBETWEENHORIZONTAL = 200;
   const [birdSpeed, setBirdSpeed] = useState(0);
   const [birdPosition, setBirdPosition] = useState(HEIGHT / 2 + BIRDHEIGHT);
   const [startedGame, setStartedGame] = useState(false);
@@ -42,7 +45,7 @@ function GameBoard() {
         position: position,
         topHeight: topHeight,
         bottomHeight: HEIGHT - topHeight - OBSTACLESPACEBETWEEN,
-        counted: false
+        counted: false,
       });
       position += OBSTACLESSPACEBETWEENHORIZONTAL;
     }
@@ -53,9 +56,19 @@ function GameBoard() {
     let interval: ReturnType<typeof setInterval>;
     if (startedGame) {
       interval = setInterval(() => {
-        moveBird(interval);
-        moveObstacle();
-        checkForCollision(interval);
+        if (dead) {
+          if (birdPosition < HEIGHT - BIRDHEIGHT) {
+            setBirdSpeed(MAXSPEED);
+            setBirdPosition((birdPosition) => (birdPosition += birdSpeed));
+          } else {
+            setBirdPosition(HEIGHT - BIRDHEIGHT);
+            setBirdSpeed(MAXSPEED);
+          }
+        } else {
+          moveBird(interval);
+          moveObstacle();
+          checkForCollision(interval);
+        }
       }, 24);
     }
 
@@ -67,21 +80,26 @@ function GameBoard() {
   function moveBird(interval: ReturnType<typeof setInterval>) {
     if (birdPosition < HEIGHT - BIRDHEIGHT) {
       setBirdPosition((birdPosition) => (birdPosition += birdSpeed));
-      setBirdSpeed((birdSpeed) => (birdSpeed += GRAVITY));
+      setBirdSpeed((birdSpeed) => {
+        if (birdSpeed + GRAVITY > MAXSPEED) {
+          return MAXSPEED;
+        }
+        return (birdSpeed += GRAVITY);
+      });
     } else {
       dying(interval);
     }
   }
 
   function dying(interval: ReturnType<typeof setInterval>) {
-    setScore(0);
     setDead(true);
-    setStartedGame(false);
-    clearInterval(interval);
-    setTimeout(() => restart(), 3000);
+    setTimeout(() => restart(interval), 3000);
   }
 
-  function restart() {
+  function restart(interval: ReturnType<typeof setInterval>) {
+    setScore(0);
+    clearInterval(interval);
+    setStartedGame(false);
     initializeObstacles(500);
     setDead(false);
     setBirdPosition(HEIGHT / 2 + BIRDHEIGHT);
@@ -130,7 +148,9 @@ function GameBoard() {
         return;
       } else {
         if (!obstacle.counted) {
-          setScore((score) => {return score + 1})
+          setScore((score) => {
+            return score + 1;
+          });
           obstacle.counted = true;
         }
       }
@@ -155,20 +175,25 @@ function GameBoard() {
 
   return (
     <div
-      className={`bg-blue-700 flex flex-row relative overflow-hidden`}
+      className={`bg-cyan-200 flex flex-row relative overflow-hidden select-none`}
       style={{ height: HEIGHT, width: WIDTH }}
       onClick={() => click()}
     >
-      {score}
+      <Score score={score} />
+      {/* {
+        dead || !startedGame ? <Menu /> : null
+      } */}
       <Bird
         position={birdPosition}
         BIRDHEIGHT={BIRDHEIGHT}
         BIRDWIDTH={BIRDWIDTH}
         BIRDYPOSITION={BIRDYPOSITION}
+        movingUpWards={birdSpeed < 10}
       />
       {obstacles.map((obstacle, index) => {
         return (
           <Obstacle
+            obstacleWidth={OBSTACLEWIDTH}
             position={obstacle.position}
             topHeight={obstacle.topHeight}
             bottomHeight={obstacle.bottomHeight}
