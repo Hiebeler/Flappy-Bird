@@ -30,6 +30,7 @@ function GameBoard() {
   const [dead, setDead] = useState(false);
   const [obstacles, setObstacles] = useState<IObstacle[]>([]);
   const [score, setScore] = useState<number>(0);
+  const [menu, setMenu] = useState<boolean>(false);
 
   useEffect(() => {
     initializeObstacles(500);
@@ -93,12 +94,13 @@ function GameBoard() {
 
   function dying(interval: ReturnType<typeof setInterval>) {
     setDead(true);
-    setTimeout(() => restart(interval), 3000);
+    setMenu(true);
+    clearInterval(interval);
   }
 
-  function restart(interval: ReturnType<typeof setInterval>) {
+  function restart() {
+    setMenu(false);
     setScore(0);
-    clearInterval(interval);
     setStartedGame(false);
     initializeObstacles(500);
     setDead(false);
@@ -175,20 +177,17 @@ function GameBoard() {
 
   return (
     <div
-      className={`bg-cyan-200 flex flex-row relative overflow-hidden select-none`}
+      className={`bg-cyan-200 flex relative overflow-hidden select-none`}
       style={{ height: HEIGHT, width: WIDTH }}
       onClick={() => click()}
     >
-      <Score score={score} />
-      {/* {
-        dead || !startedGame ? <Menu /> : null
-      } */}
+      {menu ? <Menu score={score} startGame={() => restart()}/> : <Score score={score} />}
       <Bird
         position={birdPosition}
         BIRDHEIGHT={BIRDHEIGHT}
         BIRDWIDTH={BIRDWIDTH}
         BIRDYPOSITION={BIRDYPOSITION}
-        movingUpWards={birdSpeed < 10}
+        movingUpWards={birdSpeed < 12}
       />
       {obstacles.map((obstacle, index) => {
         return (

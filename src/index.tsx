@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './pages/App';
 import reportWebVitals from './reportWebVitals';
-import './fonts/flappy-font.ttf';
+import './fonts/flappy-font-numbers.ttf';
+import './fonts/Flappy-Bird.ttf';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

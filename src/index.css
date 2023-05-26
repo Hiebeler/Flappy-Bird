@@ -4,7 +4,12 @@
 
 @font-face {
   font-family: 'FlappyBirdNumbers';
-  src: url('./fonts/flappy-font.ttf') format('truetype');
+  src: url('./fonts/flappy-font-numbers.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'FlappyBird';
+  src: url('./fonts/Flappy-Bird.ttf') format('truetype');
 }
 
 .ScoreFont {
@@ -14,11 +19,49 @@
   -webkit-text-stroke-width: 4px; 
 }
 
+.MenuScoreFont {
+  font-family: 'FlappyBirdNumbers';
+  -webkit-text-fill-color: white;
+  -webkit-text-stroke-color: #000;
+  -webkit-text-stroke-width: 2px; 
+}
+
+.pixelCorners {
+  clip-path: polygon(
+    0px calc(100% - 16px),
+    4px calc(100% - 16px),
+    4px calc(100% - 8px),
+    8px calc(100% - 8px),
+    8px calc(100% - 4px),
+    16px calc(100% - 4px),
+    16px 100%,
+    calc(100% - 16px) 100%,
+    calc(100% - 16px) calc(100% - 4px),
+    calc(100% - 8px) calc(100% - 4px),
+    calc(100% - 8px) calc(100% - 8px),
+    calc(100% - 4px) calc(100% - 8px),
+    calc(100% - 4px) calc(100% - 16px),
+    100% calc(100% - 16px),
+    100% 16px,
+    calc(100% - 4px) 16px,
+    calc(100% - 4px) 8px,
+    calc(100% - 8px) 8px,
+    calc(100% - 8px) 4px,
+    calc(100% - 16px) 4px,
+    calc(100% - 16px) 0px,
+    16px 0px,
+    16px 4px,
+    8px 4px,
+    8px 8px,
+    4px 8px,
+    4px 16px,
+    0px 16px
+  );
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'FlappyBird', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
