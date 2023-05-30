@@ -12,12 +12,12 @@ interface IObstacle {
 }
 
 function GameBoard() {
-  const HEIGHT = 700;
-  const WIDTH = 1000;
+  const [HEIGHT, setHeight] = useState<number>(500);
+  const [WIDTH, setWidth] = useState<number>(1000);
   const BIRDWIDTH = 17 * 3.3;
   const BIRDHEIGHT = 12 * 3.3;
-  const GRAVITY = 1.3;
-  const JUMP_SPEED = -12;
+  const GRAVITY = 1.5;
+  const JUMP_SPEED = -14;
   const MAXSPEED = 15;
   const OBSTACLEWIDTH = 60;
   const OBSTACLESPEED = 3;
@@ -33,19 +33,22 @@ function GameBoard() {
   const [menu, setMenu] = useState<boolean>(false);
 
   useEffect(() => {
-    initializeObstacles(500);
+    setHeight(window.innerHeight - 100)
+    setWidth(window.innerWidth)
+
+    initializeObstacles(500, window.innerHeight - 100, window.innerWidth);
   }, []);
 
-  function initializeObstacles(startingPosition: number) {
+  function initializeObstacles(startingPosition: number, height: number, widht: number) {
     let obstaclesArr: IObstacle[] = [];
     let position = startingPosition;
-    while (position < WIDTH) {
+    while (position < window.innerWidth) {
       const topHeight =
-        Math.random() * (HEIGHT - OBSTACLESPACEBETWEEN - 50 - 50) + 50;
+        Math.random() * (height - OBSTACLESPACEBETWEEN - 50 - 50) + 50;
       obstaclesArr.push({
         position: position,
         topHeight: topHeight,
-        bottomHeight: HEIGHT - topHeight - OBSTACLESPACEBETWEEN,
+        bottomHeight: height - topHeight - OBSTACLESPACEBETWEEN,
         counted: false,
       });
       position += OBSTACLESSPACEBETWEENHORIZONTAL;
@@ -102,7 +105,7 @@ function GameBoard() {
     setMenu(false);
     setScore(0);
     setStartedGame(false);
-    initializeObstacles(500);
+    initializeObstacles(500, window.innerHeight - 100, window.innerWidth);
     setDead(false);
     setBirdPosition(HEIGHT / 2 + BIRDHEIGHT);
     setBirdSpeed(0);
@@ -175,33 +178,63 @@ function GameBoard() {
     }
   }
 
+  useEffect(() => {
+    window.addEventListener("keypress", (e) => {
+      keyPress(e.key);
+    });
+
+    const keyPress = (key: string) => {
+      if (key === " ") {
+        click();
+      }
+    };
+
+    return () => {
+      window.removeEventListener("keypress", (e) => {
+        keyPress(e.key);
+      });
+    };
+  });
+
   return (
-    <div
-      className={`bg-cyan-200 flex relative overflow-hidden select-none`}
-      style={{ height: HEIGHT, width: WIDTH }}
-      onClick={() => click()}
-    >
-      {menu ? <Menu score={score} startGame={() => restart()}/> : <Score score={score} />}
-      <Bird
-        position={birdPosition}
-        BIRDHEIGHT={BIRDHEIGHT}
-        BIRDWIDTH={BIRDWIDTH}
-        BIRDYPOSITION={BIRDYPOSITION}
-        movingUpWards={birdSpeed < 12}
-      />
-      {obstacles.map((obstacle, index) => {
-        return (
-          <Obstacle
-            obstacleWidth={OBSTACLEWIDTH}
-            position={obstacle.position}
-            topHeight={obstacle.topHeight}
-            bottomHeight={obstacle.bottomHeight}
-            gameHeight={HEIGHT}
-            gameWidht={WIDTH}
-            key={index}
-          />
-        );
-      })}
+    <div>
+      <div
+        className={`bg-cyan-200 flex relative overflow-hidden select-none bg-[url('../public/background.png')] bg-repeat-x bg-bottom`}
+        style={{ height: HEIGHT, width: WIDTH }}
+        onClick={() => click()}
+      >
+        {menu ? (
+          <Menu score={score} startGame={() => restart()} />
+        ) : (
+          <Score score={score} />
+        )}
+        <Bird
+          position={birdPosition}
+          BIRDHEIGHT={BIRDHEIGHT}
+          BIRDWIDTH={BIRDWIDTH}
+          BIRDYPOSITION={BIRDYPOSITION}
+          movingUpWards={birdSpeed < 12}
+        />
+        {obstacles.map((obstacle, index) => {
+          return (
+            <Obstacle
+              obstacleWidth={OBSTACLEWIDTH}
+              position={obstacle.position}
+              topHeight={obstacle.topHeight}
+              bottomHeight={obstacle.bottomHeight}
+              gameHeight={HEIGHT}
+              gameWidht={WIDTH}
+              key={index}
+            />
+          );
+        })}
+      </div>
+      <div className="relative h-[100px] w-full bg-slate-500 bottom-0 flex flex-row">
+        <img src="/floor.png" alt="" className="h-[100px]"/>
+        <img src="/floor.png" alt="" className="h-[100px]"/>
+        <img src="/floor.png" alt="" className="h-[100px]"/>
+
+      </div>
     </div>
   );
 }
