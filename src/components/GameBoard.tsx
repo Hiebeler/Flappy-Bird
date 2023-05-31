@@ -145,10 +145,16 @@ function GameBoard() {
   }
 
   function checkForCollision(interval: ReturnType<typeof setInterval>) {
+    let birdYPositionCollision = BIRDYPOSITION;
+    let birdWidth = BIRDWIDTH;
+    if (birdSpeed > 12) {
+      birdYPositionCollision += 10;
+      birdWidth -= 20;
+    }
     obstacles.forEach((obstacle) => {
       if (
-        obstacle.position - BIRDWIDTH > BIRDYPOSITION ||
-        obstacle.position + OBSTACLEWIDTH < BIRDYPOSITION
+        obstacle.position - birdWidth > birdYPositionCollision ||
+        obstacle.position + OBSTACLEWIDTH < birdYPositionCollision
       ) {
         return;
       } else {
