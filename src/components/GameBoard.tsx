@@ -195,7 +195,7 @@ function GameBoard() {
   function checkForCollision() {
     let birdYPositionCollision = BIRDYPOSITION;
     let birdWidth = BIRDWIDTH;
-    if (birdSpeed > 12) {
+    if (birdSpeed > (MAXSPEED - 0.1) * lastDeltaTime.current) {
       birdYPositionCollision += 10;
       birdWidth -= 20;
     } else {
