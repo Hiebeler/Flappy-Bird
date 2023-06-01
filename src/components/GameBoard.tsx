@@ -3,7 +3,6 @@ import Bird from "./Bird";
 import Obstacle from "./Obstacle";
 import Score from "./Score";
 import Menu from "./Menu";
-import { request } from "https";
 
 interface IObstacle {
   position: number;
