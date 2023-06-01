@@ -150,6 +150,9 @@ function GameBoard() {
     if (birdSpeed > 12) {
       birdYPositionCollision += 10;
       birdWidth -= 20;
+    } else {
+      birdYPositionCollision += 5;
+      birdWidth -= 5;
     }
     obstacles.forEach((obstacle) => {
       if (
